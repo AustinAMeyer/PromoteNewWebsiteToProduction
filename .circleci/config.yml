@@ -1,5 +1,6 @@
 version: 2.1
 jobs:
+#Create the front end
   create_and_deploy_front_end:
     docker:
       - image: amazon/aws-cli
