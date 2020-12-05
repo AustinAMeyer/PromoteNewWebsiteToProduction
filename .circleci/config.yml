@@ -74,9 +74,10 @@ jobs:
       - run:
           name: "Clean up old front end"
           command: |
-            PreviousPipelineID=`cat ./.circleci/DeploymentIDFiles/deploymentID.txt` 
+            PreviousPipelineID=`cat ./.circleci/DeploymentIDFiles/deploymentID.txt`
+            echo $PreviousPipelineID
             aws s3 rm "s3://${PreviousPipelineID}" --recursive
-            aws cloudformation delete-stack --stack-name "${PreviousPipelineID}"
+            aws cloudformation delete-stack --stack-name $PreviousPipelineID
 workflows:
   myWorkflow:
     jobs:
