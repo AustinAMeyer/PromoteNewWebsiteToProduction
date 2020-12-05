@@ -32,7 +32,7 @@ jobs:
             --no-paginate --output text > ./.circleci/DeploymentIDFiles/deploymentID.txt
             cat ./.circleci/DeploymentIDFiles/deploymentID.txt
       - persist_to_workspace:
-          root: ./.circleci/DeploymentIDFiles/
+          root: .circleci/DeploymentIDFiles/
           paths:
             - deploymentID.txt
 
@@ -70,7 +70,7 @@ jobs:
             yum -y install tar
             yum -y install gzip
       - attach_workspace:
-          at: ./.circleci/DeploymentIDFiles/
+          at: .circleci/DeploymentIDFiles/
       - run:
           name: "Clean up old front end"
           command: |
@@ -78,7 +78,7 @@ jobs:
             echo "$PreviousPipelineID"
             aws s3 rm "s3://$PreviousPipelineID" --recursive
             aws cloudformation delete-stack --stack-name "$PreviousPipelineID"
-            
+
 workflows:
   myWorkflow:
     jobs:
