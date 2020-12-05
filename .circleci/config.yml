@@ -78,6 +78,7 @@ jobs:
             echo "$PreviousPipelineID"
             aws s3 rm "s3://$PreviousPipelineID" --recursive
             aws cloudformation delete-stack --stack-name "$PreviousPipelineID"
+            
 workflows:
   myWorkflow:
     jobs:
