@@ -34,8 +34,8 @@ jobs:
           root: ./       
           paths:
             - deploymentID.txt
-      
-  promote_to_production:
+
+  copy_to_bucket:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -43,7 +43,13 @@ jobs:
       - run:
           name: "Copy html file to S3 bucket"
           comand: |
-            aws s3 cp index.html s3://bucket-${CIRCLE_WORKFLOW_ID:0:7}
+            aws s3 cp ./index.html s3://bucket-${CIRCLE_WORKFLOW_ID:0:7}
+      
+  promote_to_production:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
       - run:
           name: "Promote build to production"
           command: |
@@ -76,7 +82,9 @@ workflows:
         - create_and_deploy_front_end
         - get_last_deployment_id:
             requires: [create_and_deploy_front_end]
-        - promote_to_production:
+        - copy_to_bucket:
             requires: [create_and_deploy_front_end]
+        - promote_to_production:
+            requires: [copy_to_bucket]
         - clean_up_old_front_end: 
             requires: [promote_to_production]
