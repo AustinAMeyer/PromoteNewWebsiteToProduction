@@ -42,7 +42,7 @@ jobs:
       - checkout
       - run:
           name: "Copy html file to S3 bucket"
-          comand: |
+          command: |
             aws s3 cp ./index.html s3://bucket-${CIRCLE_WORKFLOW_ID:0:7}
       
   promote_to_production:
