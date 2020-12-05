@@ -41,6 +41,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: "Copy html file to S3 bucket"
+          comand: |
+            aws s3 cp index.html s3://bucket-${CIRCLE_WORKFLOW_ID:0:7}
+      - run:
           name: "Promote build to production"
           command: |
             aws cloudformation deploy \
@@ -53,6 +57,11 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum -y install tar
+            yum -y install gzip
       - attach_workspace:
           at: ./
       - run:
