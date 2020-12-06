@@ -13,7 +13,7 @@ jobs:
             --template-file bucket.yml \
             --stack-name "bucket-${CIRCLE_WORKFLOW_ID:0:7}" \
             --parameter-overrides PipelineID="bucket-${CIRCLE_WORKFLOW_ID:0:7}"\
-            
+
   copy_to_bucket:
     docker:
       - image: amazon/aws-cli
@@ -51,7 +51,7 @@ jobs:
           name: "Clean up old front end"
           command: |
             echo ${deploymentID}
-            aws s3 rm "s3://${deploymentID}" --recursive
+            aws s3 rb "s3://${deploymentID}" --force
 workflows:
   myWorkflow:
     jobs:
