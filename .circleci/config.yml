@@ -14,27 +14,27 @@ jobs:
             --stack-name "bucket-${CIRCLE_WORKFLOW_ID:0:7}" \
             --parameter-overrides PipelineID="bucket-${CIRCLE_WORKFLOW_ID:0:7}"\
 
-  get_last_deployment_id:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            yum -y install tar
-            yum -y install gzip
-      - run:
-          name: "Get last deployment ID"
-          command: |
-            aws cloudformation \
-            list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
-            --no-paginate --output text > ./.circleci/DeploymentIDFiles/deploymentID.txt
-            cat ./.circleci/DeploymentIDFiles/deploymentID.txt
-      - persist_to_workspace:
-          root: .circleci/DeploymentIDFiles/
-          paths:
-            - deploymentID.txt
+  # get_last_deployment_id:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           yum -y install tar
+  #           yum -y install gzip
+  #     - run:
+  #         name: "Get last deployment ID"
+  #         command: |
+  #           aws cloudformation \
+  #           list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
+  #           --no-paginate --output text > ./.circleci/DeploymentIDFiles/deploymentID.txt
+  #           cat ./.circleci/DeploymentIDFiles/deploymentID.txt
+  #     - persist_to_workspace:
+  #         root: .circleci/DeploymentIDFiles/
+  #         paths:
+  #           - deploymentID.txt
 
   copy_to_bucket:
     docker:
@@ -69,16 +69,19 @@ jobs:
           command: |
             yum -y install tar
             yum -y install gzip
+
+  ###########################
+  #Instead just add the check in to this one and not use attached workspaces at all. Save the work.
       - attach_workspace:
           at: .circleci/DeploymentIDFiles/
       - run:
           name: "Clean up old front end"
           command: |
-            PreviousPipelineID=`cat ./.circleci/DeploymentIDFiles/deploymentID.txt`
-            echo "$PreviousPipelineID"
+            echo ${deploymentID}
             aws s3 rm "s3://$PreviousPipelineID" --recursive
-            aws cloudformation delete-stack --stack-name "$PreviousPipelineID"
-
+            aws cloudformation delete-stack --stack-name "${deploymentID}"
+# PreviousPipelineID=`cat ./.circleci/DeploymentIDFiles/deploymentID.txt`
+# echo "$PreviousPipelineID"
 workflows:
   myWorkflow:
     jobs:
