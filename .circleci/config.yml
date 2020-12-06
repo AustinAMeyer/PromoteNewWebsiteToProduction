@@ -86,8 +86,6 @@ workflows:
   myWorkflow:
     jobs:
         - create_and_deploy_front_end
-        - get_last_deployment_id:
-            requires: [create_and_deploy_front_end]
         - copy_to_bucket:
             requires: [create_and_deploy_front_end]
         - promote_to_production:
